@@ -34,7 +34,7 @@
     :db/doc "Name (key) of this entry"
     :db.install/_attribute :db.part/db}
    {:db/id #db/id[:db.part/db]
-    :db/ident :entry/vale
+    :db/ident :entry/value
     :db/valueType :db.type/bytes
     :db/cardinality :db.cardinality/one
     :db/doc "(Opaque) value of this entry"

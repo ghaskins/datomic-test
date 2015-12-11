@@ -24,8 +24,16 @@
       conn))
 
 (defn run []
-  (let [conn (create-db "datomic:mem://foo")]
-    (print conn)))
+  (let [conn (create-db "datomic:mem://foo")
+        result (d/transact conn [{:db/id #db/id[:db.part/user -1000001],
+                                  :entry/name "bar"
+                                  :entry/value (.getBytes "baz")}
+                                 {:db/id #db/id[:db.part/user],
+                                  :document/id "foo",
+                                  :document/version 1
+                                  :document/entries #db/id[:db.part/user -1000001]}
+                                 ])]
+    (print result)))
 
 (defn -main [& args]
   (let [{:keys [options arguments errors summary]} (parse-opts args cli-options)]
