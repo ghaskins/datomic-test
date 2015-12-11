@@ -59,16 +59,16 @@
     (ffirst result)))
 
 (defn printdoc [doc]
-  (printf "document version %d with %d entries: \n"
+  (printf "document \"%s\" version %d with %d entries: \n"
+          (:document/id doc)
           (:document/version doc)
           (count (:document/entries doc)))
   (dorun (map #(printf "\t%s=%s" (:entry/name %) (with-out-str (pprint (:entry/value %)))) (:document/entries doc))))
 
 (defn run []
-  (let [conn (create-db "datomic:mem://foo")
-        result (getdoc "foo" (db conn))]
-    (printdoc result)
-    ))
+  (let [conn (create-db "datomic:mem://foo")]
+    (printdoc (getdoc "foo" (db conn)))
+    (printdoc (getdoc "bar" (db conn)))))
 
 (defn -main [& args]
   (let [{:keys [options arguments errors summary]} (parse-opts args cli-options)]
