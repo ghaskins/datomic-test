@@ -1,7 +1,9 @@
 (ns datomic-test.schema)
 
 (def schema
-  [{:db/id #db/id[:db.part/db]
+  [
+   ;; document
+   {:db/id #db/id[:db.part/db]
     :db/ident :document/id
     :db/valueType :db.type/string
     :db/cardinality :db.cardinality/one
@@ -21,6 +23,21 @@
     :db/cardinality :db.cardinality/many
     :db/isComponent true
     :db/doc "Name/value pair entries attached to this document"
+    :db.install/_attribute :db.part/db}
+
+   ;; entry (name/value pair)
+   {:db/id #db/id[:db.part/db]
+    :db/ident :entry/name
+    :db/valueType :db.type/string
+    :db/cardinality :db.cardinality/one
+    :db/index true
+    :db/doc "Name (key) of this entry"
+    :db.install/_attribute :db.part/db}
+   {:db/id #db/id[:db.part/db]
+    :db/ident :entry/vale
+    :db/valueType :db.type/bytes
+    :db/cardinality :db.cardinality/one
+    :db/doc "(Opaque) value of this entry"
     :db.install/_attribute :db.part/db}
    ]
   )
