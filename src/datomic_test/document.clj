@@ -44,6 +44,12 @@
       (throw (Exception. (format "unexpected result count: %d", nr))))
     (ffirst result)))
 
+(defn getkeys [id version]
+  )
+
+(defn getvalues [id version pred]
+  )
+
 (defn print [doc]
   (printf "document \"%s\" version %d with %d entries: \n"
           (:document/id doc)
@@ -53,3 +59,9 @@
    (map #(printf "\t%s=%s" (:entry/name %)
                  (with-out-str (pprint (:entry/value %))))
         (:document/entries doc))))
+
+(defn update [id operations & opts]
+  )
+
+(defn commit [id]
+  )

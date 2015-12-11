@@ -16,8 +16,18 @@
   (println msg)
   (System/exit status))
 
-(defn run []
+(defn create []
   (let [conn (doc/create-db "datomic:mem://foo")]
+    (doc/update "foo"
+                {"bar" (.getBytes "baz")
+                 "bat" (.getBytes "bah")})
+    (doc/update "bar"
+                {"bar" (.getBytes "baz")
+                 "bat" (.getBytes "bah")})
+    conn))
+
+(defn run []
+  (let [conn (create)]
     (doc/print (doc/get "foo" conn))
     (doc/print (doc/get "bar" conn))))
 
