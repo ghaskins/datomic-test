@@ -18,12 +18,6 @@
   (println msg)
   (System/exit status))
 
-(defn create-db [uri]
-  (d/create-database uri)
-  (let [conn (d/connect uri)]
-      (d/transact conn datomic-test.schema/schema)
-      conn))
-
 (defn populate-db [conn]
   (d/transact conn [{:db/id #db/id[:db.part/user -1000001],
                                      :entry/name "bar"
@@ -50,6 +44,13 @@
                                                         #db/id[:db.part/user -1000004]]}
                                     ]))
 
+(defn create-db [uri]
+  (d/create-database uri)
+  (let [conn (d/connect uri)]
+    (d/transact conn datomic-test.schema/schema)
+    (populate-db conn)
+    conn))
+
 (defn getdoc [id db]
   (let [result (q '[:find (pull ?doc [*]) :where [?doc :document/id "foo"]] db)
         nr (count result)]
@@ -59,7 +60,6 @@
 
 (defn run []
   (let [conn (create-db "datomic:mem://foo")
-        _ (populate-db conn)
         result (getdoc "foo" (db conn))]
     (printf "document version %d with %d entries: \n"
             (:document/version result)
