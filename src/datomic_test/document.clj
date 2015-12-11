@@ -6,29 +6,29 @@
 
 (defn populate-db [conn]
   (d/transact conn [{:db/id #db/id[:db.part/user -1000001],
-                                     :entry/name "bar"
-                                     :entry/value (.getBytes "baz")}
-                                    {:db/id #db/id[:db.part/user -1000002],
-                                     :entry/name "bat"
-                                     :entry/value (.getBytes "bah")}
-                                    {:db/id #db/id[:db.part/user],
-                                     :document/id "foo",
-                                     :document/version 1
-                                     :document/entries [#db/id[:db.part/user -1000001]
-                                                        #db/id[:db.part/user -1000002]]}
+                     :entry/name "bar"
+                     :entry/value (.getBytes "baz")}
+                    {:db/id #db/id[:db.part/user -1000002],
+                     :entry/name "bat"
+                     :entry/value (.getBytes "bah")}
+                    {:db/id #db/id[:db.part/user]
+                     :document/id "foo",
+                     :document/version 1
+                     :document/entries [#db/id[:db.part/user -1000001]
+                                        #db/id[:db.part/user -1000002]]}
 
-                                    {:db/id #db/id[:db.part/user -1000003],
-                                     :entry/name "bar"
-                                     :entry/value (.getBytes "baz")}
-                                    {:db/id #db/id[:db.part/user -1000004],
-                                     :entry/name "bat"
-                                     :entry/value (.getBytes "bah")}
-                                    {:db/id #db/id[:db.part/user],
-                                     :document/id "bar",
-                                     :document/version 1
-                                     :document/entries [#db/id[:db.part/user -1000003]
-                                                        #db/id[:db.part/user -1000004]]}
-                                    ]))
+                    {:db/id #db/id[:db.part/user -1000003],
+                     :entry/name "bar"
+                     :entry/value (.getBytes "baz")}
+                    {:db/id #db/id[:db.part/user -1000004],
+                     :entry/name "bat"
+                     :entry/value (.getBytes "bah")}
+                    {:db/id #db/id[:db.part/user]
+                     :document/id "bar",
+                     :document/version 1
+                     :document/entries [#db/id[:db.part/user -1000003]
+                                        #db/id[:db.part/user -1000004]]}
+                    ]))
 
 (defn create-db [uri]
   (d/create-database uri)
