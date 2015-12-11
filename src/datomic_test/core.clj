@@ -63,7 +63,10 @@
           (:document/id doc)
           (:document/version doc)
           (count (:document/entries doc)))
-  (dorun (map #(printf "\t%s=%s" (:entry/name %) (with-out-str (pprint (:entry/value %)))) (:document/entries doc))))
+  (dorun
+   (map #(printf "\t%s=%s" (:entry/name %)
+                 (with-out-str (pprint (:entry/value %))))
+        (:document/entries doc))))
 
 (defn run []
   (let [conn (create-db "datomic:mem://foo")]
