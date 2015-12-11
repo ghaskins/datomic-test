@@ -52,7 +52,7 @@
     conn))
 
 (defn getdoc [id db]
-  (let [result (q '[:find (pull ?doc [*]) :where [?doc :document/id "foo"]] db)
+  (let [result (q '[:find (pull ?doc [*]) :in $ ?id :where [?doc :document/id ?id]] db id)
         nr (count result)]
     (if (not= 1 nr)
       (throw (Exception. (format "unexpected result count: %d", nr))))
