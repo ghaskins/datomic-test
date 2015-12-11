@@ -58,13 +58,16 @@
       (throw (Exception. (format "unexpected result count: %d", nr))))
     (ffirst result)))
 
+(defn printdoc [doc]
+  (printf "document version %d with %d entries: \n"
+          (:document/version doc)
+          (count (:document/entries doc)))
+  (dorun (map #(printf "\t%s=%s" (:entry/name %) (with-out-str (pprint (:entry/value %)))) (:document/entries doc))))
+
 (defn run []
   (let [conn (create-db "datomic:mem://foo")
         result (getdoc "foo" (db conn))]
-    (printf "document version %d with %d entries: \n"
-            (:document/version result)
-            (count (:document/entries result)))
-    (dorun (map #(printf "\t%s=%s" (:entry/name %) (with-out-str (pprint (:entry/value %)))) (:document/entries result)))
+    (printdoc result)
     ))
 
 (defn -main [& args]
