@@ -24,16 +24,8 @@
       (d/transact conn datomic-test.schema/schema)
       conn))
 
-(defn getdoc [id db]
-  (let [result (q '[:find (pull ?doc [*]) :where [?doc :document/id id]] db)
-        nr (count result)]
-    (if (not= 1 nr)
-      (throw (Exception. (format "unexpected result count: %d", nr))))
-    (ffirst result)))
-
-(defn run []
-  (let [conn (create-db "datomic:mem://foo")
-        insresult (d/transact conn [{:db/id #db/id[:db.part/user -1000001],
+(defn populate-db [conn]
+  (d/transact conn [{:db/id #db/id[:db.part/user -1000001],
                                      :entry/name "bar"
                                      :entry/value (.getBytes "baz")}
                                     {:db/id #db/id[:db.part/user -1000002],
@@ -56,9 +48,23 @@
                                      :document/version 1
                                      :document/entries [#db/id[:db.part/user -1000003]
                                                         #db/id[:db.part/user -1000004]]}
-                                    ])
-       result (getdoc "foo" (db conn))]
-    (pprint result)
+                                    ]))
+
+(defn getdoc [id db]
+  (let [result (q '[:find (pull ?doc [*]) :where [?doc :document/id "foo"]] db)
+        nr (count result)]
+    (if (not= 1 nr)
+      (throw (Exception. (format "unexpected result count: %d", nr))))
+    (ffirst result)))
+
+(defn run []
+  (let [conn (create-db "datomic:mem://foo")
+        _ (populate-db conn)
+        result (getdoc "foo" (db conn))]
+    (printf "document version %d with %d entries: \n"
+            (:document/version result)
+            (count (:document/entries result)))
+    (dorun (map #(printf "\t%s=%s" (:entry/name %) (with-out-str (pprint (:entry/value %)))) (:document/entries result)))
     ))
 
 (defn -main [& args]
