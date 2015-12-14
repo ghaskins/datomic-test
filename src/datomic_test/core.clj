@@ -25,10 +25,15 @@
   (let [conn (doc/create-db "datomic:mem://foo")]
     ;; create our first version of "foo" with two entries
     (updateprint conn "foo"
-            [{:name "bar" :value (.getBytes "baz")}
-             {:name "bat" :value (.getBytes "bah")}])
-    ;; now update "foo" to remove the "bar" entry
+                 [{:name "bar" :value (.getBytes "baz")}
+                  {:name "bat" :value (.getBytes "bah")}])
+    ;; now update "foo" to remove the "bar" entry (the lack of a :value denotes a removal)
     (updateprint conn "foo" [{:name "bar"}])
+    ;; now update the "bat" field to a new value
+    (updateprint conn "foo"
+                 [{:name "bat" :value (.getBytes "blah")}])
+    (updateprint conn "foo"
+                 [{:name "bar" :value (.getBytes "blaz")}])
     ))
 
 (defn -main [& args]
