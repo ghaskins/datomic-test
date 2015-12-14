@@ -3,6 +3,7 @@
 (use '[datomic.api :only [q db] :as d])
 
 ;;------------------------------------------------------
+;; define our transaction functions
 ;;------------------------------------------------------
 (def inc-version
   "Atomically increment the document version (or initialize to '1')"
@@ -57,6 +58,10 @@
                   []
                   )})
 
+;;------------------------------------------------------
+;; install - initializes a new database by installing
+;;           our schema and transaction functions
+;;------------------------------------------------------
 (defn install [conn]
   (d/transact conn
               [
