@@ -4,43 +4,10 @@
 (use 'datomic-test.schema)
 (use 'clojure.pprint)
 
-(defn populate-db [conn]
-  (d/transact conn [{:db/id #db/id[:db.part/user -1000001],
-                     :entry/name "bar"
-                     :entry/value (.getBytes "baz")}
-                    {:db/id #db/id[:db.part/user -1000002],
-                     :entry/name "bat"
-                     :entry/value (.getBytes "bah")}
-                    {:db/id #db/id[:db.part/user]
-                     :document/id "foo",
-                     :document/version 1
-                     :document/entries [#db/id[:db.part/user -1000001]
-                                        #db/id[:db.part/user -1000002]]}
-
-                    {:db/id #db/id[:db.part/user -1000003],
-                     :entry/name "bar"
-                     :entry/value (.getBytes "baz")}
-                    {:db/id #db/id[:db.part/user -1000004],
-                     :entry/name "bat"
-                     :entry/value (.getBytes "bah")}
-                    {:db/id #db/id[:db.part/user]
-                     :document/id "bar",
-                     :document/version 1
-                     :document/entries [#db/id[:db.part/user -1000003]
-                                        #db/id[:db.part/user -1000004]]}
-                    ]))
-
-
 (defn create-db [uri]
   (d/create-database uri)
-
   (let [conn (d/connect uri)]
-
     (datomic-test.schema/install conn)
-
-    ;; populate some test data
-    ;;(populate-db conn)
-
     conn))
 
 (defn get [id conn]
@@ -74,7 +41,7 @@
   )
 
 (defn update [conn docid operations & opts]
-  (let [id #db/id[:db.part/user]
+  (let [id (d/tempid :db.part/user)
         tx-data (concat [[:inc-version id docid]] (xlate-ops id docid operations))]
     (pprint tx-data)
     (flush)
