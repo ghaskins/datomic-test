@@ -18,12 +18,13 @@
 
 (defn create []
   (let [conn (doc/create-db "datomic:mem://foo")]
-    (doc/update "foo"
-                {"bar" (.getBytes "baz")
-                 "bat" (.getBytes "bah")})
-    (doc/update "bar"
-                {"bar" (.getBytes "baz")
-                 "bat" (.getBytes "bah")})
+    (doc/update conn "foo"
+                [{:name "bar" :value (.getBytes "baz")}
+                 {:name "bat" :value (.getBytes "bah")}])
+    (doc/update conn "bar"
+                [{:name "bar" :value (.getBytes "baz")}
+                 {:name "bat" :value (.getBytes "bah")}])
+
     conn))
 
 (defn run []

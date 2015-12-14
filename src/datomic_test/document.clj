@@ -30,11 +30,17 @@
                                         #db/id[:db.part/user -1000004]]}
                     ]))
 
+
 (defn create-db [uri]
   (d/create-database uri)
+
   (let [conn (d/connect uri)]
-    (d/transact conn datomic-test.schema/schema)
+
+    (datomic-test.schema/install conn)
+
+    ;; populate some test data
     (populate-db conn)
+
     conn))
 
 (defn get [id conn]
@@ -60,8 +66,21 @@
                  (with-out-str (pprint (:entry/value %))))
         (:document/entries doc))))
 
-(defn update [id operations & opts]
+(defn xlate-ops [id operations]
+  (map #(if-let [value (:value %)]
+          [:db/add id :entry/name (:name %) :entry/value value]
+          [:db/retract id :entry/name (:name %)])
+       operations)
   )
 
-(defn commit [id]
+(defn update [conn docid operations & opts]
+  (let [id #db/id[:db.part/user]
+        tx-data (concat [[:inc-version id docid]] (xlate-ops id operations))]
+    (pprint tx-data)
+    ;;(d/transact conn tx-data)
+    )
+
+  )
+
+(defn commit [conn id]
   )
