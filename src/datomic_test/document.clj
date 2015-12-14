@@ -37,18 +37,11 @@
   (map #(if-let [value (:value %)]
           [:update-entry id docid (:name %) value]
           [:remove-entry id docid (:name %)])
-       operations)
-  )
+       operations))
 
 (defn update [conn docid operations & opts]
-  (let [id (d/tempid :db.part/user)
-        tx-data (concat [[:inc-version id docid]] (xlate-ops id docid operations))]
-    (pprint tx-data)
-    (flush)
-    (pprint (d/transact conn tx-data))
-    )
-
-  )
+  (let [id (d/tempid :db.part/user)]
+    (d/transact conn (concat [[:inc-version id docid]] (xlate-ops id docid operations)))))
 
 (defn commit [conn id]
   )

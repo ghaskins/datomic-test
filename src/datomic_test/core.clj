@@ -16,24 +16,19 @@
   (println msg)
   (System/exit status))
 
-(defn create []
-  (let [conn (doc/create-db "datomic:mem://foo")]
-    ;; create our first version of "foo" with two entries
-    (doc/update conn "foo"
-                [{:name "bar" :value (.getBytes "baz")}
-                 {:name "bat" :value (.getBytes "bah")}])
-    ;; now update "foo" to remove the "bar" entry
-    (doc/update conn "foo" [{:name "bar"}])
-;;    (doc/update conn "bar"
-;;                [{:name "bar" :value (.getBytes "baz")}
-;;                 {:name "bat" :value (.getBytes "bah")}])
-
-    conn))
+(defn updateprint [conn id operations]
+  (doc/update conn id operations)
+  (doc/print (doc/get id conn))
+  )
 
 (defn run []
-  (let [conn (create)]
-    (doc/print (doc/get "foo" conn))
-    ;;(doc/print (doc/get "bar" conn))
+  (let [conn (doc/create-db "datomic:mem://foo")]
+    ;; create our first version of "foo" with two entries
+    (updateprint conn "foo"
+            [{:name "bar" :value (.getBytes "baz")}
+             {:name "bat" :value (.getBytes "bah")}])
+    ;; now update "foo" to remove the "bar" entry
+    (updateprint conn "foo" [{:name "bar"}])
     ))
 
 (defn -main [& args]
