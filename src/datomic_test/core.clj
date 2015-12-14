@@ -18,7 +18,7 @@
 
 (defn updateprint [conn id operations]
   (doc/update conn id operations)
-  (doc/print (doc/get id conn))
+  (doc/print (doc/get conn id))
   )
 
 (defn run []

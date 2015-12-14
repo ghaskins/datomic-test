@@ -10,7 +10,7 @@
     (datomic-test.schema/install conn)
     conn))
 
-(defn get [id conn]
+(defn get [conn id]
   (d/entity (db conn) [:document/id id]))
 
 (defn getkeys [id version]
