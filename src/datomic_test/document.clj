@@ -11,11 +11,7 @@
     conn))
 
 (defn get [id conn]
-  (let [result (q '[:find (pull ?doc [*]) :in $ ?id :where [?doc :document/id ?id]] (db conn) id)
-        nr (count result)]
-    (if (not= 1 nr)
-      (throw (Exception. (format "unexpected result count: %d", nr))))
-    (ffirst result)))
+  (d/entity (db conn) [:document/id id]))
 
 (defn getkeys [id version]
   )
