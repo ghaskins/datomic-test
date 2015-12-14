@@ -66,16 +66,16 @@
                  (with-out-str (pprint (:entry/value %))))
         (:document/entries doc))))
 
-(defn xlate-ops [id operations]
+(defn xlate-ops [id docid operations]
   (map #(if-let [value (:value %)]
-          [:db/add id :entry/name (:name %) :entry/value value]
+          [:update-entry id docid (:name %) value]
           [:db/retract id :entry/name (:name %)])
        operations)
   )
 
 (defn update [conn docid operations & opts]
   (let [id #db/id[:db.part/user]
-        tx-data (concat [[:inc-version id docid]] (xlate-ops id operations))]
+        tx-data (concat [[:inc-version id docid]] (xlate-ops id docid operations))]
     (pprint tx-data)
     ;;(d/transact conn tx-data)
     )

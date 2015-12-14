@@ -2,16 +2,42 @@
 
 (use '[datomic.api :only [q db] :as d])
 
+;;------------------------------------------------------
+;; define our db/transaction functions
+;;------------------------------------------------------
 (def inc-version
-  "Atomically increment the document version"
+  "Atomically increment the document version (or initialize to '1')"
   #db/fn {:lang :clojure
           :params [db id docid]
-          :code (let [version (if-let [e (get db docid)]
-                                (inc (:document/version e))
-                                1)]
-                  {:db/id id
-                   :document/id docid
-                   :document/version version})})
+          :code (let [doc (d/entity (db conn) [:document/id docid])]
+                  [{:db/id id
+                    :document/id docid
+                    :document/version (if-let [version (:document/version doc)]
+                                        (inc version)
+                                        1)}])})
+
+(def update-entry
+  "Update an entry in the document, inserting it if it doesn't already exist"
+  #db/fn {:lang :clojure
+          :params [db id docid name value]
+          :code (if-let [entryid (q '[:find ?entry .
+                                   :in $ ?docid ?name
+                                   :where
+                                   [?doc :document/id ?docid]
+                                   [?doc :document/entries ?entry]
+                                   [?entry :entry/name ?name]] db docid name)]
+                  ;; the entry already exists, so simply update its value
+                  [{:db/id entryid,
+                    :entry/value value}]
+                  ;; the entry doesn't exist, so we need to fully insert it
+                  (let [entryid #db/id[:db.part/user]]
+                    [{:db/id entryid,
+                      :entry/name name
+                      :entry/value value}
+                     {:db/id id
+                      :document/id docid
+                      :document/entries [entryid]
+                      }]))})
 
 (defn install [conn]
   (d/transact conn
@@ -62,4 +88,7 @@
                ;;------------------------------------------------------
                {:db/id #db/id[:db.part/user]
                 :db/ident :inc-version
-                :db/fn inc-version}]))
+                :db/fn inc-version}
+               {:db/id #db/id[:db.part/user]
+                :db/ident :update-entry
+                :db/fn update-entry}]))
