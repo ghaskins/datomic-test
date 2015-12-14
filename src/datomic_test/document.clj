@@ -29,15 +29,14 @@
                  (with-out-str (pprint (:entry/value %))))
         (:document/entries doc))))
 
-(defn xlate-ops [id docid operations]
-  (map #(if-let [value (:value %)]
-          [:update-entry id docid (:name %) value]
-          [:remove-entry id docid (:name %)])
-       operations))
-
 (defn update [conn docid operations & opts]
   (let [id (d/tempid :db.part/user)]
-    (d/transact conn (concat [[:inc-version id docid]] (xlate-ops id docid operations)))))
+    (d/transact conn
+                (concat [[:inc-version id docid]]
+                        (map #(if-let [value (:value %)]
+                                [:update-entry id docid (:name %) value]
+                                [:remove-entry id docid (:name %)])
+                             operations)))))
 
 (defn commit [conn id]
   )
