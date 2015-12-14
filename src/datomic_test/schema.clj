@@ -9,7 +9,7 @@
   "Atomically increment the document version (or initialize to '1')"
   #db/fn {:lang :clojure
           :params [db id docid]
-          :code (let [doc (d/entity (db conn) [:document/id docid])]
+          :code (let [doc (d/entity db [:document/id docid])]
                   [{:db/id id
                     :document/id docid
                     :document/version (if-let [version (:document/version doc)]
@@ -21,16 +21,17 @@
   #db/fn {:lang :clojure
           :params [db id docid name value]
           :code (if-let [entryid (q '[:find ?entry .
-                                   :in $ ?docid ?name
-                                   :where
-                                   [?doc :document/id ?docid]
-                                   [?doc :document/entries ?entry]
-                                   [?entry :entry/name ?name]] db docid name)]
+                                      :in $ ?docid ?name
+                                      :where
+                                      [?doc :document/id ?docid]
+                                      [?doc :document/entries ?entry]
+                                      [?entry :entry/name ?name]]
+                                    db docid name)]
                   ;; the entry already exists, so simply update its value
                   [{:db/id entryid,
                     :entry/value value}]
                   ;; the entry doesn't exist, so we need to fully insert it
-                  (let [entryid #db/id[:db.part/user]]
+                  (let [entryid (d/tempid :db.part/user)]
                     [{:db/id entryid,
                       :entry/name name
                       :entry/value value}
@@ -38,6 +39,24 @@
                       :document/id docid
                       :document/entries [entryid]
                       }]))})
+
+(def remove-entry
+  "Remove an entry from the document"
+  #db/fn {:lang :clojure
+          :params [db id docid name]
+          :code (if-let [entryid (q '[:find ?entry .
+                                      :in $ ?docid ?name
+                                      :where
+                                      [?doc :document/id ?docid]
+                                      [?doc :document/entries ?entry]
+                                      [?entry :entry/name ?name]]
+                                    db docid name)]
+                  ;; the entry exists, so go ahead and remove it
+                  [[:db.fn/retractEntity entryid]
+                   [:db/retract id :document/entries entryid]]
+                  ;; the entry doesn't exist, do nothing
+                  []
+                  )})
 
 (defn install [conn]
   (d/transact conn
@@ -91,4 +110,7 @@
                 :db/fn inc-version}
                {:db/id #db/id[:db.part/user]
                 :db/ident :update-entry
-                :db/fn update-entry}]))
+                :db/fn update-entry}
+               {:db/id #db/id[:db.part/user]
+                :db/ident :remove-entry
+                :db/fn remove-entry}]))

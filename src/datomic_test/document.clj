@@ -39,7 +39,7 @@
     (datomic-test.schema/install conn)
 
     ;; populate some test data
-    (populate-db conn)
+    ;;(populate-db conn)
 
     conn))
 
@@ -69,7 +69,7 @@
 (defn xlate-ops [id docid operations]
   (map #(if-let [value (:value %)]
           [:update-entry id docid (:name %) value]
-          [:db/retract id :entry/name (:name %)])
+          [:remove-entry id docid (:name %)])
        operations)
   )
 
@@ -77,7 +77,8 @@
   (let [id #db/id[:db.part/user]
         tx-data (concat [[:inc-version id docid]] (xlate-ops id docid operations))]
     (pprint tx-data)
-    ;;(d/transact conn tx-data)
+    (flush)
+    (pprint (d/transact conn tx-data))
     )
 
   )
