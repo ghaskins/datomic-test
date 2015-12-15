@@ -1,8 +1,8 @@
 (ns datomic-test.core
+  (:refer-clojure :exclude [print update get ])
   (:require [clojure.tools.cli :refer [parse-opts]])
-  (:gen-class))
-
-(use '[datomic-test.document :as doc])
+  (:gen-class)
+  (:use [datomic-test.document :as doc]))
 
 (def cli-options
   ;; An option with a required argument
@@ -19,6 +19,7 @@
 
 (defn run []
   (let [conn (doc/create-db "datomic:mem://foo")]
+    
     ;; create our first version of "foo" with two entries
     (doc/update conn "foo"
                  [{:name "bar" :value (.getBytes "baz")}
