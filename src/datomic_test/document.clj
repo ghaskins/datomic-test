@@ -31,8 +31,16 @@
 (defn get [conn docid version]
   (d/entity (get-db conn docid version) [:document/id docid]))
 
-(defn get-keys [id version]
-  )
+(defn get-keys [conn docid version]
+  (let [db (get-db conn docid version)
+        entries (q '[:find ?entry
+                     :in $ ?docid
+                     :where
+                     [?doc :document/id ?docid]
+                     [?doc :document/entries ?entries]
+                     [?entries :entry/name ?entry]]
+                   db docid)]
+    (map #(first %) entries)))
 
 (defn get-values [id version pred]
   )

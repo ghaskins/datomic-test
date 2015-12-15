@@ -3,6 +3,7 @@
   (:gen-class))
 
 (use '[datomic-test.document :as doc])
+(use 'clojure.pprint)
 
 (def cli-options
   ;; An option with a required argument
@@ -34,6 +35,8 @@
     ;; print the different versions of the document
     (dorun (map #(doc/print (doc/get conn "foo" %)) (range 1 5)))
 
+    (pprint (doc/get-keys conn "foo" 1))
+    (pprint (doc/get-keys conn "foo" 2))
     (datomic.api/release conn)
     ))
 
