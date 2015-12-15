@@ -10,10 +10,10 @@
     (datomic-test.schema/install conn)
     conn))
 
-(defn get [conn id version]
+(defn getdb [conn docid version]
   (if (= version :latest)
     ;; retrieving the latest is trivial
-    (d/entity (db conn) [:document/id id])
+    (db conn)
     ;; retrieving a historical version will take a little more work
     (let [txn (q '[:find ?txn .
                    :in $ ?docid ?version
@@ -21,8 +21,11 @@
                    [?doc :document/id ?docid]
                    ;; ?op (fourth parameter) == true to capture assertions only
                    [?doc :document/version ?version ?txn true]]
-                 (d/history (db conn)) id version)]
-      (d/entity (d/as-of (db conn) txn) [:document/id id]))))
+                 (d/history (db conn)) docid version)]
+      (d/as-of (db conn) txn))))
+
+(defn get [conn docid version]
+  (d/entity (getdb conn docid version) [:document/id docid]))
 
 (defn getkeys [id version]
   )
