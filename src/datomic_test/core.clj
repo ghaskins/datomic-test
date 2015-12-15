@@ -20,7 +20,7 @@
 
 
 (defn simpletest []
-  (let [uri (str "datomic:free://localhost:4334/" (java.util.UUID/randomUUID))
+  (let [uri "datomic:mem:/foo"
         conn (doc/create-db uri)]
 
     ;; create our first version of "foo" with two entries
