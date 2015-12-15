@@ -18,7 +18,7 @@
 
 (defn updateprint [conn id operations]
   (doc/update conn id operations)
-  (doc/print (doc/get conn id))
+  (doc/print (doc/get conn id :latest))
   )
 
 (defn run []
@@ -34,6 +34,8 @@
                  [{:name "bat" :value (.getBytes "blah")}])
     (updateprint conn "foo"
                  [{:name "bar" :value (.getBytes "blaz")}])
+    ;; show v3 of the document
+    (doc/print (doc/get conn "foo" 3))
     ))
 
 (defn -main [& args]
