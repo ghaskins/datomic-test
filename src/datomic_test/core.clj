@@ -16,26 +16,24 @@
   (println msg)
   (System/exit status))
 
-(defn updateprint [conn id operations]
-  (doc/update conn id operations)
-  (doc/print (doc/get conn id :latest))
-  )
 
 (defn run []
   (let [conn (doc/create-db "datomic:mem://foo")]
     ;; create our first version of "foo" with two entries
-    (updateprint conn "foo"
+    (doc/update conn "foo"
                  [{:name "bar" :value (.getBytes "baz")}
                   {:name "bat" :value (.getBytes "bah")}])
     ;; now update "foo" to remove the "bar" entry (the lack of a :value denotes a removal)
-    (updateprint conn "foo" [{:name "bar"}])
+    (doc/update conn "foo" [{:name "bar"}])
     ;; now update the "bat" field to a new value
-    (updateprint conn "foo"
+    (doc/update conn "foo"
                  [{:name "bat" :value (.getBytes "blah")}])
-    (updateprint conn "foo"
+    (doc/update conn "foo"
                  [{:name "bar" :value (.getBytes "blaz")}])
-    ;; show v3 of the document
-    (doc/print (doc/get conn "foo" 3))
+
+    ;; print the different versions of the document
+    (dorun (map #(doc/print (doc/get conn "foo" %)) (range 1 5)))
+
     (datomic.api/release conn)
     ))
 
