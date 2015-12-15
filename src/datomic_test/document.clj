@@ -10,7 +10,7 @@
     (datomic-test.schema/install conn)
     conn))
 
-(defn getdb [conn docid version]
+(defn get-db [conn docid version]
   (if (= version :latest)
     ;; retrieving the latest is trivial
     (db conn)
@@ -29,12 +29,12 @@
       (d/as-of (db conn) txn))))
 
 (defn get [conn docid version]
-  (d/entity (getdb conn docid version) [:document/id docid]))
+  (d/entity (get-db conn docid version) [:document/id docid]))
 
-(defn getkeys [id version]
+(defn get-keys [id version]
   )
 
-(defn getvalues [id version pred]
+(defn get-values [id version pred]
   )
 
 (defn print [doc]
