@@ -19,7 +19,8 @@
                    :in $ ?docid ?version
                    :where
                    [?doc :document/id ?docid]
-                   [?doc :document/version ?version ?txn]]
+                   ;; ?op (fourth parameter) == true to capture assertions only
+                   [?doc :document/version ?version ?txn true]]
                  (d/history (db conn)) id version)]
       (d/entity (d/as-of (db conn) txn) [:document/id id]))))
 
