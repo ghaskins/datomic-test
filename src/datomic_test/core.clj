@@ -19,7 +19,7 @@
 
 
 (defn run []
-  (let [conn (doc/create-db "datomic:mem://foo")]
+  (let [conn (doc/create-db "datomic:free://localhost:4334/foo")]
 
     ;; create our first version of "foo" with two entries
     (doc/update conn "foo"

@@ -8,4 +8,5 @@
                  [com.datomic/datomic-free "0.9.5344"]]
   :main ^:skip-aot datomic-test.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all}}
+  :jvm-opts ^:replace ["-Xmx1g" "-server"])
