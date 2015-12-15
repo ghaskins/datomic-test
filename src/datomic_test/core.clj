@@ -1,10 +1,10 @@
 (ns datomic-test.core
   (:refer-clojure :exclude [print update get])
   (:require [clojure.tools.cli :refer [parse-opts]]
-            [datomic-test.document :refer :all :as doc] 
+            [datomic-test.document :refer :all :as doc]
             [clojure.pprint :refer :all])
   (gen-class))
-  
+
 (def cli-options
   ;; An option with a required argument
   [["-i" "--iterations COUNT" "Iteration count"
@@ -20,7 +20,7 @@
 
 (defn run []
   (let [conn (doc/create-db "datomic:mem://foo")]
-    
+
     ;; create our first version of "foo" with two entries
     (doc/update conn "foo"
                  [{:name "bar" :value (.getBytes "baz")}
