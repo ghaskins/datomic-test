@@ -45,7 +45,7 @@
 
 (defn run [conn options]
   (let [nr (:iterations options)
-        tests [["null" #(list %)]
+        tests [["null" #(str %)]
                ["doc/add-entry" #(doc/update conn "foo"
                                              [{:name (str %)
                                                :value (.getBytes "blah")}])]
