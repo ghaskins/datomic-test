@@ -1,8 +1,8 @@
-(ns datomic-test.document)
-
-(use '[datomic.api :only [q db] :as d])
-(use 'datomic-test.schema)
-(use 'clojure.pprint)
+(ns datomic-test.document
+  (:refer-clojure :exclude [print update get ])
+  (:require  [datomic.api :refer [q db] :as d]
+             [datomic-test.schema :refer :all]
+             [clojure.pprint :refer :all]))
 
 (defn create-db [uri]
   (d/create-database uri)

@@ -1,6 +1,5 @@
-(ns datomic-test.schema)
-
-(use '[datomic.api :only [q db] :as d])
+(ns datomic-test.schema
+  (:require [datomic.api :refer [q db] :as d]))
 
 ;;------------------------------------------------------
 ;; define our transaction functions
