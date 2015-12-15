@@ -50,7 +50,9 @@
                                              [{:name (str %)
                                                :value (.getBytes "blah")}])]
                ["raw/insert" #(d/transact conn [{:db/id (d/tempid :db.part/user)
-                                                 :document/id (str "raw-insert-" %)}])]]]
+                                                 :document/id (str "raw-insert-" %)}])]
+               ["raw/async-insert" #(d/transact-async conn [{:db/id (d/tempid :db.part/user)
+                                                             :document/id (str "async-insert-" %)}])]]]
 
     (dorun (map (fn [[name func]]
                   (let [[_ result] (timing/once #(dotimes [i nr] (func i)))]
