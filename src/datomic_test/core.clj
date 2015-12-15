@@ -36,6 +36,7 @@
                  [{:name "bar" :value (.getBytes "blaz")}])
     ;; show v3 of the document
     (doc/print (doc/get conn "foo" 3))
+    (datomic.api/release conn)
     ))
 
 (defn -main [& args]
@@ -44,4 +45,5 @@
     (cond
       (:help options) (exit 0 summary))
     (run)
+    (datomic.api/shutdown true)
     ))
