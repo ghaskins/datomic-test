@@ -1,6 +1,7 @@
 (ns datomic-test.core
   (:refer-clojure :exclude [print update get])
   (:require [clojure.tools.cli :refer [parse-opts]]
+            [datomic.api :refer [q db] :as d]
             [datomic-test.document :refer :all :as doc]
             [datomic-test.timing :refer :all :as timing]
             [clojure.pprint :refer :all])
@@ -45,9 +46,11 @@
 (defn run [conn options]
   (let [nr (:iterations options)
         tests [["null" #(list %)]
-               ["add-entry" #(doc/update conn "foo"
-                                         [{:name (str %)
-                                           :value (.getBytes "blah")}])]]]
+               ["doc/add-entry" #(doc/update conn "foo"
+                                             [{:name (str %)
+                                               :value (.getBytes "blah")}])]
+               ["raw/insert" #(d/transact conn [{:db/id (d/tempid :db.part/user)
+                                                 :document/id (str "raw-insert-" %)}])]]]
 
     (dorun (map (fn [[name func]]
                   (let [[_ result] (timing/once #(dotimes [i nr] (func i)))]
