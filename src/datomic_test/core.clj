@@ -19,7 +19,8 @@
 
 
 (defn run []
-  (let [conn (doc/create-db "datomic:free://localhost:4334/foo")]
+  (let [uri (str "datomic:free://localhost:4334/" (java.util.UUID/randomUUID))
+        conn (doc/create-db uri)]
 
     ;; create our first version of "foo" with two entries
     (doc/update conn "foo"
@@ -39,6 +40,7 @@
     (pprint (doc/get-keys conn "foo" 1))
     (pprint (doc/get-keys conn "foo" 2))
     (datomic.api/release conn)
+    (datomic.api/delete-database uri)
     ))
 
 (defn -main [& args]
