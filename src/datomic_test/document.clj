@@ -14,7 +14,11 @@
   (if (= version :latest)
     ;; retrieving the latest is trivial
     (db conn)
-    ;; retrieving a historical version will take a little more work
+    ;; retrieving a historical version will take a little more work..
+    ;; we need to identify the specific transaction that was involved
+    ;; in committing the update to the version of the document we are
+    ;; interested in, and then use that with (d/as-of) to form the
+    ;; snapshot view
     (let [txn (q '[:find ?txn .
                    :in $ ?docid ?version
                    :where
