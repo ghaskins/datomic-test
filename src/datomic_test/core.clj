@@ -42,6 +42,18 @@
     (datomic.api/delete-database uri)
     ))
 
+(defn run [conn options]
+  (let [nr (:iterations options)
+        tests [["null" #(list %)]
+               ["add-entry" #(doc/update conn "foo"
+                                         [{:name (str %)
+                                           :value (.getBytes "blah")}])]]]
+
+    (dorun (map (fn [[name func]]
+                  (let [[_ result] (timing/once #(dotimes [i nr] (func i)))]
+                        (println name ":" (double (/ (/ result nr) 1000)) "us/iteration")))
+                tests))))
+
 (defn -main [& args]
   (let [{:keys [options arguments errors summary]} (parse-opts args cli-options)]
     ;; Handle help and error conditions
@@ -50,19 +62,8 @@
 
     (println "Starting datomic-test with" (:iterations options) "iterations")
     (let [uri (str "datomic:free://localhost:4334/" (java.util.UUID/randomUUID))
-          conn (doc/create-db uri)
-          nr (:iterations options)
-          [_, result] (timing/once
-                       (fn []
-                         (dorun (map #(doc/update conn "foo"
-                                                  [{:name (str %) :value (.getBytes "blah")}]) (range nr)
-
-                                     ))))]
-
-      (println "Completed:" (double (/ (/ result nr) 1000)) "us/iteration")
-      ;;(doc/print (doc/get conn "foo" 1))
-      ;;(doc/print (doc/get conn "foo" nr))
-
+          conn (doc/create-db uri)]
+      (run conn options)
       (datomic.api/release conn)
       (datomic.api/delete-database uri))
     (datomic.api/shutdown true)))
